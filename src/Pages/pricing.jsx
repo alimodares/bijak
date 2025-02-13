@@ -13,6 +13,7 @@ const Pricing = () => {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({});
+  const [invalidFields, setInvalidFields] = useState({}); // ✅ استیت برای مشخص کردن فیلدهای خالی
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -52,11 +53,33 @@ const Pricing = () => {
 
   const handleInputChange = (e, field) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    setInvalidFields((prev) => ({ ...prev, [field]: false })); 
   };
 
   const handleCalculate = async () => {
+    let newInvalidFields = {};
+    titleItems.forEach((field) => {
+      if (!formData[field]) {
+        newInvalidFields[field] = true;
+      }
+    });
+
+    if (Object.keys(newInvalidFields).length > 0) {
+      setInvalidFields(newInvalidFields);
+      Swal.fire({
+        text: "لطفاً همه فیلدها را پر کنید!",
+        icon: "warning",
+        confirmButtonText: "باشه",
+      });
+      return;
+    }
+
     if (!selectedValue) {
-      alert("لطفاً یک شهر مقصد انتخاب کنید!");
+      Swal.fire({
+        text: "لطفاً یک شهر مقصد انتخاب کنید!",
+        icon: "warning",
+        confirmButtonText: "باشه",
+      });
       return;
     }
 
@@ -101,7 +124,9 @@ const Pricing = () => {
             onClick={() => setClickedInput(titleItems[index])}
             onBlur={handleBlur}
             className={`focus:outline-none p-1.5 rounded-3xl border-2 w-full text-center text-sm ${
-              clickedInput === titleItems[index]
+              invalidFields[titleItems[index]]
+                ? "border-red-500" 
+                : clickedInput === titleItems[index]
                 ? "border-sky-400 shadow-custom"
                 : "border-gray-300"
             }`}

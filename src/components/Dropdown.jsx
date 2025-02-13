@@ -66,7 +66,7 @@ const Dropdown = ({ selectedValue, setSelectedValue }) => {
             className="w-full px-3 py-2 border focus:outline-none text-center"
           />
 
-          <ul className="max-h-40 overflow-y-auto flex items-center flex-col">
+          <ul className="max-h-40 overflow-y-auto text-center">
             {filteredItems.length > 0 ? (
               filteredItems.map((item) => (
                 <li
