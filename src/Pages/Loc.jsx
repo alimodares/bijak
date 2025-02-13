@@ -9,6 +9,7 @@ const Loc = () => {
   const [handelblock, setHandelblock] = useState(false);
   const [inputLng, setInputLng] = useState(0);
   const [inputLat, setInputLat] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -80,6 +81,39 @@ const Loc = () => {
       setInputLat(lat);
     });
   }, []);
+
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+    try {
+      const response = await fetch(
+        `https://api.neshan.org/v1/search?term=${encodeURIComponent(
+          searchQuery
+        )}&lat=35.700954&lng=51.391173`,
+        {
+          headers: { "Api-Key": "service.81590f575b4a471c800fd48d30592428" },
+        }
+      );
+      const data = await response.json();
+
+      if (data.count > 0) {
+        const result = data.items[0];
+        const { location } = result;
+
+        markerRef.current.setLngLat([location.x, location.y]);
+
+        setHandelblock(true);
+        setInputLng(location.x);
+        setInputLat(location.y);
+        mapRef.current.flyTo({ center: [location.x, location.y], zoom: 15 });
+      } else {
+        alert("مکان مورد نظر پیدا نشد!");
+      }
+    } catch (error) {
+      console.error("خطا در جستجو:", error);
+      alert("مشکلی در جستجو به وجود آمد.");
+    }
+  };
+
   const handApileNavigate = () => {
     navigate("/Pricing", { state: { inputLng, inputLat } });
   };
@@ -90,24 +124,36 @@ const Loc = () => {
     <div>
       <div className="w-full h-[835px]" ref={mapContainerRef} />
       <div className=" absolute bottom-8">
-        {handelblock ? (
+        <div className="mb-4 ml-9">
+          <input
+            type="text"
+            placeholder="جستجو"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-3/5 p-2 rounded-l-full text-end pl-20  border-[#007EA2] border-2 focus:shadow-custom-2 focus:outline-none"
+          />
+          <button className="bg-[#007EA2] p-2 px-5 rounded-r-full text-center border-y-2 border-[#007EA2] text-white hover:bg-cyan-500 hover:border-cyan-500" onClick={handleSearch}>جست جو</button>
+        </div>
+        <div>
+          {handelblock ? (
+            <button
+              onClick={handApileNavigate}
+              className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
+            >
+              انتخاب مبدا
+            </button>
+          ) : (
+            <button className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 opacity-50 cursor-not-allowed">
+              انتخاب مبدا
+            </button>
+          )}
           <button
-            onClick={handApileNavigate}
+            onClick={handleNavigate}
             className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
           >
-            انتخاب مبدا
+            ارسال توسط خودم
           </button>
-        ) : (
-          <button className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 opacity-50 cursor-not-allowed">
-            انتخاب مبدا
-          </button>
-        )}
-        <button
-          onClick={handleNavigate}
-          className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
-        >
-          ارسال توسط خودم
-        </button>
+        </div>
       </div>
     </div>
   );
