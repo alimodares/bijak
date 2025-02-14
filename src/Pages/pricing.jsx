@@ -13,7 +13,7 @@ const Pricing = () => {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({});
-  const [invalidFields, setInvalidFields] = useState({}); // ✅ استیت برای مشخص کردن فیلدهای خالی
+  const [invalidFields, setInvalidFields] = useState({});
 
   const location = useLocation();
   const navigate = useNavigate();
