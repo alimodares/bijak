@@ -10,6 +10,8 @@ const Loc = () => {
   const [inputLng, setInputLng] = useState(0);
   const [inputLat, setInputLat] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions , setSuggestions] = useState  ([])
+  const debounceTimeout = useRef(null);
 
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -30,7 +32,7 @@ const Loc = () => {
       poi: false,
       traffic: false,
       mapTypeControllerOptions: {
-        show: true,
+        show: false,
         position: "top-left",
       },
       locationControlOptions: {
@@ -82,6 +84,46 @@ const Loc = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (!searchQuery) {
+      setSuggestions([]);
+      return;
+    }
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `https://api.neshan.org/v1/search?term=${encodeURIComponent(
+            searchQuery
+          )}&lat=35.700954&lng=51.391173`,
+          {
+            headers: { "Api-Key": "service.81590f575b4a471c800fd48d30592428" },
+          }
+        );
+        const data = await response.json();
+        setSuggestions(data.items || []);
+      } catch (error) {
+        console.error("خطا در جستجو:", error);
+      }
+    }, 10);
+
+    return () => clearTimeout(debounceTimeout.current);
+  }, [searchQuery])
+
+  const handleSelectSuggestion = (location) => {
+    markerRef.current.setLngLat([location.x, location.y]);
+    setHandelblock(true);
+    setInputLng(location.x);
+    setInputLat(location.y);
+    mapRef.current.flyTo({ center: [location.x, location.y], zoom: 15 });
+    setSearchQuery(""); 
+    setSuggestions([]);
+  };
+
   const handleSearch = async () => {
     if (!searchQuery) return;
     try {
@@ -117,29 +159,51 @@ const Loc = () => {
   const handApileNavigate = () => {
     navigate("/Pricing", { state: { inputLng, inputLat } });
   };
+
   const handleNavigate = () => {
     navigate("./Pricing");
   };
+
   return (
     <div>
       <div className="w-full h-[835px]" ref={mapContainerRef} />
-      <div className=" absolute bottom-1">
-        <div className="bg-[#F9F9F9] py-6 max-w-[425px]">
-        <div className="mb-4 ml-9">
+      <div className=" absolute top-20 ">
+      <div className=" ml-9">
+        <div className="bg-white flex rounded-full">
+          <button
+            onClick={handleSearch}
+          >
+            <svg className=" ml-2 w-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+            </svg>
+          </button>
           <input
             type="text"
             placeholder="جستجو"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-3/5 p-2 rounded-l-full text-end pl-20  border-[#007EA2] border-2 focus:outline-none"
+            className="w-full rounded-full p-2 pr-5 text-end pl-20 focus:outline-none"
           />
-          <button
-            className="bg-[#007EA2] p-2 px-5 rounded-r-full text-center border-y-2 border-[#007EA2] text-white hover:bg-cyan-500 hover:border-cyan-500"
-            onClick={handleSearch}
-          >
-            جست جو
-          </button>
+          
         </div>
+          {suggestions.length > 0 && (
+          <ul className="absolute bg-white border border-gray-300 w-11/12 rounded-md shadow-lg mt-1 max-h-40 overflow-auto text-center ">
+            {suggestions.map((item, index) => (
+              <li
+                key={index}
+                className="p-2 cursor-pointer hover:bg-gray-100"
+                onClick={() => handleSelectSuggestion(item.location)}
+              >
+                {item.title}
+                <hr className="mt-2" />
+              </li>
+            ))}
+          </ul>
+        )}
+        </div>
+      </div>
+      <div className=" absolute bottom-8">
+        
         <div>
           {handelblock ? (
             <button
@@ -154,12 +218,11 @@ const Loc = () => {
             </button>
           )}
           <button
-            onClick={handleNavigate}
+          onClick={handleNavigate}
             className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
           >
             ارسال توسط خودم
           </button>
-        </div>
         </div>
       </div>
     </div>

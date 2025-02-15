@@ -50,8 +50,19 @@ const Pricing = () => {
     setClickedInput(null);
   };
 
+  const formatNumber = (value) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   const handleInputChange = (e, field) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    let value = e.target.value.replace(/,/g, ""); 
+  
+    if (field === "value") {
+      value = value.replace(/[^\d]/g, ""); 
+      value = formatNumber(value);
+    }
+  
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setInvalidFields((prev) => ({ ...prev, [field]: false })); 
   };
 
@@ -82,9 +93,16 @@ const Pricing = () => {
       return;
     }
 
+    const formDataWithoutCommas = { ...formData };
+Object.keys(formDataWithoutCommas).forEach((key) => {
+  if (typeof formDataWithoutCommas[key] === "string") {
+    formDataWithoutCommas[key] = formDataWithoutCommas[key].replace(/,/g, "");
+  }
+});
+
     await Apicalculation(
       selectedValue,
-      formData,
+      formDataWithoutCommas,
       setData,
       setLoading,
       setError,
@@ -129,9 +147,10 @@ const Pricing = () => {
                 ? "border-sky-400 shadow-custom"
                 : "border-gray-300"
             }`}
-            type="number"
+            type="text"
             id={titleItems[index]}
             placeholder={placeholderItems[index]}
+            value={formData[titleItems[index]] || ""}
             onChange={(e) => handleInputChange(e, titleItems[index])}
           />
         </div>
@@ -147,7 +166,9 @@ const Pricing = () => {
       />
 
       <button
-        onClick={handleCalculate}
+        onClick={() => {
+          handleCalculate();
+        }}
         className="w-4/5 flex justify-center mt-5 p-1.5 rounded-3xl border-2 bg-[#b20000] text-white hover:bg-white hover:text-[#b20000] hover:border-[#b20000] transition-colors duration-300"
       >
         {loading ? "در حال محاسبه..." : "محاسبه قیمت"}

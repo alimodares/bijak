@@ -1,6 +1,6 @@
 const Apicalculation = async (
   destinationCityId,
-  formData,
+  formDataWithoutCommas,
   setData,
   setLoading,
   setError,
@@ -22,7 +22,7 @@ const Apicalculation = async (
         body: JSON.stringify({
           lng: inputLng,
           lat: inputLat,
-          ...formData,
+          ...formDataWithoutCommas,
           destination_city_id: destinationCityId,
         }),
       }
