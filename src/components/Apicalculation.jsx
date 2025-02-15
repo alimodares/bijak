@@ -38,7 +38,6 @@ const Apicalculation = async (
     setError(err.message);
   } finally {
     setLoading(false);
-    console.log(inputLng, inputLat);
   }
 };
 
