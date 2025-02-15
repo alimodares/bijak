@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 const Loc = () => {
   const navigate = useNavigate();
 
-  const [clickingMap, setClickingMap] = useState(false);
+  const [handelblock, setHandelblock] = useState(false);
   const [inputLng, setInputLng] = useState(0);
   const [inputLat, setInputLat] = useState(0);
-  const [inputSearch, setInputSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -76,18 +76,18 @@ const Loc = () => {
           .setLngLat([lng, lat])
           .addTo(mapRef.current);
       }
-      setClickingMap(true);
+      setHandelblock(true);
       setInputLng(lng);
       setInputLat(lat);
     });
   }, []);
 
   const handleSearch = async () => {
-    if (!inputSearch) return;
+    if (!searchQuery) return;
     try {
       const response = await fetch(
         `https://api.neshan.org/v1/search?term=${encodeURIComponent(
-          inputSearch
+          searchQuery
         )}&lat=35.700954&lng=51.391173`,
         {
           headers: { "Api-Key": "service.81590f575b4a471c800fd48d30592428" },
@@ -101,7 +101,7 @@ const Loc = () => {
 
         markerRef.current.setLngLat([location.x, location.y]);
 
-        setClickingMap(true);
+        setHandelblock(true);
         setInputLng(location.x);
         setInputLat(location.y);
         mapRef.current.flyTo({ center: [location.x, location.y], zoom: 15 });
@@ -123,14 +123,15 @@ const Loc = () => {
   return (
     <div>
       <div className="w-full h-[835px]" ref={mapContainerRef} />
-      <div className=" absolute bottom-8">
+      <div className=" absolute bottom-1">
+        <div className="bg-[#F9F9F9] py-6 max-w-[425px]">
         <div className="mb-4 ml-9">
           <input
             type="text"
             placeholder="جستجو"
-            value={inputSearch}
-            onChange={(e) => setInputSearch(e.target.value)}
-            className="w-3/5 p-2 rounded-l-full text-end pl-20  border-[#007EA2] border-2 focus:shadow-custom-2 focus:outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-3/5 p-2 rounded-l-full text-end pl-20  border-[#007EA2] border-2 focus:outline-none"
           />
           <button
             className="bg-[#007EA2] p-2 px-5 rounded-r-full text-center border-y-2 border-[#007EA2] text-white hover:bg-cyan-500 hover:border-cyan-500"
@@ -140,7 +141,7 @@ const Loc = () => {
           </button>
         </div>
         <div>
-          {clickingMap ? (
+          {handelblock ? (
             <button
               onClick={handApileNavigate}
               className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
@@ -158,6 +159,7 @@ const Loc = () => {
           >
             ارسال توسط خودم
           </button>
+        </div>
         </div>
       </div>
     </div>

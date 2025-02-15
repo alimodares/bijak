@@ -4,35 +4,42 @@ const Dropdown = ({ selectedValue, setSelectedValue }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState(selectedValue || "");
-
-  const items = [
-    { id: 1, name: "اصفهان" },
-    { id: 2, name: "تهران" },
-    { id: 12, name: "مشهد" },
-    { id: 4, name: "قم" },
-    { id: 5, name: "مازندران" },
-    { id: 6, name: "کرج" },
-    { id: 7, name: "شیراز" },
-    { id: 8, name: "ساری" },
-    { id: 9, name: "کردان" },
-    { id: 10, name: "تبریز" },
-    { id: 11, name: "قشم" },
-  ];
-
-  const filteredItems = items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [cities, setCities] = useState([]); 
 
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsOpen(false);
-    }
-  };
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch(
+          "https://test-bjakapi.liara.run/utils/get_cities"
+        );
+        const data = await response.json();
+        if (data.success && Array.isArray(data.cities)) {
+          setCities(data.cities);
+        } else {
+          console.error("داده‌های نامعتبر دریافت شد:", data);
+          setCities([]);
+        }
+      } catch (error) {
+        console.error("خطا در دریافت اطلاعات شهرها:", error);
+      }
+    };
+    fetchCities();
+  }, []);
+
+  const filteredCities = Array.isArray(cities)
+  ? cities.filter((city) => city.city_name && city.city_name.toLowerCase().includes(searchTerm.toLowerCase()))
+  : [];
 
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -67,18 +74,18 @@ const Dropdown = ({ selectedValue, setSelectedValue }) => {
           />
 
           <ul className="max-h-40 overflow-y-auto text-center">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
+            {filteredCities.length > 0 ? (
+              filteredCities.map((city) => (
                 <li
-                  key={item.id}
+                  key={city.id}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    setSelectedItem(item.name);
-                    setSelectedValue(item.id);
+                    setSelectedItem(city.city_name);
+                    setSelectedValue(city.id);
                     setIsOpen(false);
                   }}
                 >
-                  {item.name}
+                  {city.city_name}
                 </li>
               ))
             ) : (
