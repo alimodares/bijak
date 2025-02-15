@@ -22,7 +22,6 @@ const Pricing = () => {
   const [inputLat] = useState(location.state?.inputLat || 0);
 
   useEffect(() => {
-    console.log(inputLng, inputLat);
   }, [inputLng, inputLat]);
 
   const handleNavigate = () => {
