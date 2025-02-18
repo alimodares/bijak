@@ -157,11 +157,11 @@ const Loc = () => {
   };
 
   const handApileNavigate = () => {
-    navigate("/Pricing", { state: { inputLng, inputLat } });
+    navigate("/Registration", { state: { inputLng, inputLat } });
   };
 
   const handleNavigate = () => {
-    navigate("./Pricing");
+    navigate("./Registration");
   };
 
   return (

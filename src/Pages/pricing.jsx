@@ -24,9 +24,9 @@ const Pricing = () => {
   useEffect(() => {
   }, [inputLng, inputLat]);
 
-  const handleNavigate = () => {
-    navigate("/");
-  };
+    const handleNavigate = () => {
+      navigate("/");
+    };
 
   const labelItems = [
     "طول (سانتی‌متر)",
