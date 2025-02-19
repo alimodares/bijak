@@ -21,12 +21,11 @@ const Pricing = () => {
   const [inputLng] = useState(location.state?.inputLng || 0);
   const [inputLat] = useState(location.state?.inputLat || 0);
 
-  useEffect(() => {
-  }, [inputLng, inputLat]);
+  useEffect(() => {}, [inputLng, inputLat]);
 
-    const handleNavigate = () => {
-      navigate("/");
-    };
+  const handleNavigate = () => {
+    navigate("/");
+  };
 
   const labelItems = [
     "طول (سانتی‌متر)",
@@ -55,15 +54,15 @@ const Pricing = () => {
   };
 
   const handleInputChange = (e, field) => {
-    let value = e.target.value.replace(/,/g, ""); 
-  
+    let value = e.target.value.replace(/,/g, "");
+
     if (field === "value") {
-      value = value.replace(/[^\d]/g, ""); 
+      value = value.replace(/[^\d]/g, "");
       value = formatNumber(value);
     }
-  
+
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setInvalidFields((prev) => ({ ...prev, [field]: false })); 
+    setInvalidFields((prev) => ({ ...prev, [field]: false }));
   };
 
   const handleCalculate = async () => {
@@ -94,11 +93,14 @@ const Pricing = () => {
     }
 
     const formDataWithoutCommas = { ...formData };
-Object.keys(formDataWithoutCommas).forEach((key) => {
-  if (typeof formDataWithoutCommas[key] === "string") {
-    formDataWithoutCommas[key] = formDataWithoutCommas[key].replace(/,/g, "");
-  }
-});
+    Object.keys(formDataWithoutCommas).forEach((key) => {
+      if (typeof formDataWithoutCommas[key] === "string") {
+        formDataWithoutCommas[key] = formDataWithoutCommas[key].replace(
+          /,/g,
+          ""
+        );
+      }
+    });
 
     await Apicalculation(
       selectedValue,
@@ -111,6 +113,8 @@ Object.keys(formDataWithoutCommas).forEach((key) => {
     );
     setIsOpen(true);
   };
+
+  console.log();
 
   useEffect(() => {
     if (isOpen) {
@@ -142,7 +146,7 @@ Object.keys(formDataWithoutCommas).forEach((key) => {
             onBlur={handleBlur}
             className={`focus:outline-none p-1.5 rounded-3xl border-2 w-full text-center text-sm ${
               invalidFields[titleItems[index]]
-                ? "border-red-500" 
+                ? "border-red-500"
                 : clickedInput === titleItems[index]
                 ? "border-sky-400 shadow-custom"
                 : "border-gray-300"
