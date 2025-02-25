@@ -10,7 +10,7 @@ const Loc = () => {
   const [inputLng, setInputLng] = useState(0);
   const [inputLat, setInputLat] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions , setSuggestions] = useState  ([])
+  const [suggestions, setSuggestions] = useState([]);
   const debounceTimeout = useRef(null);
 
   const mapContainerRef = useRef(null);
@@ -112,7 +112,7 @@ const Loc = () => {
     }, 10);
 
     return () => clearTimeout(debounceTimeout.current);
-  }, [searchQuery])
+  }, [searchQuery]);
 
   const handleSelectSuggestion = (location) => {
     markerRef.current.setLngLat([location.x, location.y]);
@@ -120,7 +120,7 @@ const Loc = () => {
     setInputLng(location.x);
     setInputLat(location.y);
     mapRef.current.flyTo({ center: [location.x, location.y], zoom: 15 });
-    setSearchQuery(""); 
+    setSearchQuery("");
     setSuggestions([]);
   };
 
@@ -168,58 +168,66 @@ const Loc = () => {
     <div>
       <div className="w-full h-[835px]" ref={mapContainerRef} />
       <div className=" absolute top-20 ">
-      <div className=" ml-9">
-        <div className="bg-white flex rounded-full">
-          <button
-            onClick={handleSearch}
-          >
-            <svg className=" ml-2 w-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-            </svg>
-          </button>
-          <input
-            type="text"
-            placeholder="جستجو"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-full p-2 pr-5 text-end pl-20 focus:outline-none"
-          />
-          
-        </div>
-          {suggestions.length > 0 && (
-          <ul className="absolute bg-white border border-gray-300 w-11/12 rounded-md shadow-lg mt-1 max-h-40 overflow-auto text-center ">
-            {suggestions.map((item, index) => (
-              <li
-                key={index}
-                className="p-2 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSelectSuggestion(item.location)}
+        <div className=" ml-9">
+          <div className="bg-white flex rounded-full w-8/12 sm:w-2/3 lg:w-2/3 mx-auto">
+            <button onClick={handleSearch}>
+              <svg
+                className=" ml-2 w-4 text-gray-500 dark:text-gray-400"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20"
               >
-                {item.title}
-                <hr className="mt-2" />
-              </li>
-            ))}
-          </ul>
-        )}
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                />
+              </svg>
+            </button>
+            <input
+              type="text"
+              placeholder="جستجو"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-full p-2 pr-5 text-end pl-20 focus:outline-none"
+            />
+          </div>
+          {suggestions.length > 0 && (
+            <ul className="bg-white border border-gray-300  w-8/12 mx-auto rounded-md shadow-lg mt-1 max-h-40 overflow-auto text-center ">
+              {suggestions.map((item, index) => (
+                <li
+                  key={index}
+                  className="p-2 cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSelectSuggestion(item.location)}
+                >
+                  {item.title}
+                  <hr className="mt-2" />
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
-      <div className=" absolute bottom-8">
-        
-        <div>
+      <div className="absolute bottom-8 flex">
+        <div className="flex sm:flex-row  gap-4">
           {handelblock ? (
             <button
               onClick={handApileNavigate}
-              className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
+              className="bg-[#007EA2] p-3 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom xxs:ml-4  xxs:text-[16px] xxs:px-5 xxs: xs:px-10 xs:text-lg w-auto"
             >
               انتخاب مبدا
             </button>
           ) : (
-            <button className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 opacity-50 cursor-not-allowed">
+            <button className="bg-[#007EA2] p-3 rounded-full text-white px-10 opacity-50 cursor-not-allowed  xxs:ml-4 xxs:text-[16px] xxs:px-5 xxs: xs:px-10 xs:text-lg w-auto">
               انتخاب مبدا
             </button>
           )}
           <button
-          onClick={handleNavigate}
-            className="bg-[#007EA2] p-3 ml-6 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom"
+            onClick={handleNavigate}
+            className="bg-[#007EA2] p-3 rounded-full text-white px-10 hover:bg-cyan-500 hover:shadow-custom xxs:text-[16px] xxs:px-5 xxs: xs:px-10 xs:text-lg w-auto"
           >
             ارسال توسط خودم
           </button>

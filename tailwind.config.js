@@ -11,7 +11,11 @@ module.exports = {
         'custom-2' : 'inset 0 0 8px #555'
       },
       fontFamily: {
-        iranSans: ['IranSans', 'sans-serif'], 
+        YekanBakh: ['YekanBakh', 'sans-serif'], 
+      },
+      screens: {
+        xs: "400px", 
+        xxs:"320px"
       },
     },
   },

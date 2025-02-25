@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import getService from "../api/Gets";
 
 const Searchbox = ({ setValue, watch }) => {
   const [searchIsOpen, setSearchIsOpen] = useState(false);
@@ -9,23 +10,18 @@ const Searchbox = ({ setValue, watch }) => {
   const inputRef = useRef(null);
   const selectedCityId = watch("destination_city_id");
 
+  const getcity = () => {
+    getService.getCities().then(
+      (res) => {
+        setCities(res.data.cities);
+        setFilteredCities(res.data.cities);
+      },
+      (err) => {}
+    );
+  };
+
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetch("https://test-bjakapi.liara.run/utils/get_cities");
-        const data = await response.json();
-        if (data.success && Array.isArray(data.cities)) {
-          setCities(data.cities);
-          setFilteredCities(data.cities);
-        } else {
-          console.error("داده‌های نامعتبر دریافت شد:", data);
-          setCities([]);
-        }
-      } catch (error) {
-        console.error("خطا در دریافت اطلاعات شهرها:", error);
-      }
-    };
-    fetchCities();
+    getcity();
   }, []);
 
   const filterCities = (value) => {
@@ -37,18 +33,34 @@ const Searchbox = ({ setValue, watch }) => {
     setFilteredCities(newList);
   };
 
-    const selectedCity = cities.find(city => city.id === selectedCityId);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setSearchIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const selectedCity = cities?.find((city) => city.id === selectedCityId);
 
   return (
     <div className="relative">
-      <label className="flex justify-center mt-2">شهر مقصد</label>
+      <label className="flex justify-end mt-2">شهر مقصد</label>
 
       <button
         onClick={(e) => {
           e.preventDefault();
           setSearchIsOpen(!searchIsOpen);
         }}
-        className={`mt-2 w-full py-2 border-2 rounded-xl transition duration-300 ${
+        className={`mt-2 w-full py-2 border-2 bg-white border-[#C0BFBF] rounded-xl transition duration-300 ${
           selectedCity
             ? "text-gray-600 border-gray-500"
             : "text-gray-400 border-gray-300"
@@ -65,7 +77,7 @@ const Searchbox = ({ setValue, watch }) => {
           <input
             ref={inputRef}
             type="text"
-            placeholder="جستجو..."
+            placeholder="...جستجو"
             onChange={(e) => filterCities(e.target.value)}
             className="w-full px-3 py-2 border focus:outline-none text-center"
           />

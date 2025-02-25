@@ -4,8 +4,8 @@
 
 
 @font-face {
-    font-family: "IranSans";
-    src: url("./../public/iransansfont/iransans/IRANSans\(FaNum\)_Medium.ttf");
+    font-family: "YekanBakh";
+    src: url("/public/Pro+/Yekan\ Bakh\ FaNum/otf/YekanBakhFaNum-Regular.otf") 
 }
 
 #main-root{
@@ -20,6 +20,5 @@
     background-color: #F9F9F9;
 }
 *{
-    font-family: 'IranSans';
+    font-family: 'YekanBakh';
 }
-  
